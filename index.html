@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-  <title>Print-Ready QR Sticker · Viruzverse</title>
+  <title>QR Sticker Studio · Count by Link</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * {
@@ -75,7 +75,6 @@
       align-items: flex-start;
     }
 
-    /* Control Panel */
     .panel {
       background: #111811;
       border: 1.5px solid #243025;
@@ -332,39 +331,46 @@
       font-weight: 500;
     }
 
+    .link-count-note {
+      background: #1e271e;
+      border-left: 3px solid #43A047;
+      padding: 0.5rem 0.8rem;
+      border-radius: 12px;
+      margin: 0.8rem 0 0.2rem;
+      font-size: 0.7rem;
+      color: #b8dfb0;
+      text-align: center;
+    }
+    .link-count-note strong {
+      color: #7ef06d;
+    }
+
     @media (max-width: 768px) {
       body {
         padding: 0.8rem;
       }
-
       .layout {
         gap: 1rem;
       }
-
       .panel {
         max-width: 100%;
         padding: 1.2rem;
         position: static;
       }
-
       h1 {
         font-size: 1.6rem;
       }
-
       .sticker-grid {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
         gap: 0.8rem;
       }
-
       .sticker-wrapper {
         max-width: 180px;
       }
-
       .btn-outline {
         padding: 0.6rem 1rem;
         font-size: 0.75rem;
       }
-
       .dl-buttons {
         gap: 0.5rem;
       }
@@ -375,16 +381,13 @@
         grid-template-columns: repeat(2, 1fr);
         gap: 0.6rem;
       }
-
       .sticker-wrapper {
         max-width: 100%;
       }
-
       .btn-sm {
         padding: 0.65rem 0.8rem;
         font-size: 0.75rem;
       }
-
       .btn-outline {
         padding: 0.55rem 0.8rem;
         font-size: 0.7rem;
@@ -396,16 +399,13 @@
         background: white;
         padding: 0;
       }
-      
       .panel, .dl-buttons, .preview-label, .progress-wrap, header, .print-info, .table-badge {
         display: none;
       }
-      
       .sticker-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 0;
       }
-      
       canvas {
         box-shadow: none;
         border-radius: 0;
@@ -414,520 +414,511 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div class="badge">⚡ Viruzverse Solutions</div>
-      <h1>QR Sticker <span>Generator</span></h1>
-      <div class="subhead">Print-ready · 300 DPI · Paytm/PhonePe style</div>
-    </header>
+<div class="container">
+  <header>
+    <div class="badge">⚡ Viruzverse Solutions</div>
+    <h1>QR Sticker <span>Generator</span></h1>
+    <div class="subhead">One menu link · Count all stickers · No extra URL table</div>
+  </header>
 
-    <div class="layout">
-      <div class="panel">
-        <div class="field">
-          <label>🏪 Store / Restaurant Name</label>
-          <input type="text" id="storeName" value="GoSip" maxlength="20" oninput="liveUpdate()" placeholder="Your store name">
-        </div>
-
-        <div class="field">
-          <label>🔗 Menu / Ordering URL</label>
-          <input type="url" id="menuUrl" value="https://gosip.in/menu" placeholder="https://yourstore.com/menu" oninput="debounceGenerate()">
-        </div>
-
-        <div class="field">
-          <label>🔢 Number of Tables (Stickers)</label>
-          <input type="number" id="tableCount" value="4" min="1" max="100" oninput="liveUpdate()">
-        </div>
-
-        <div class="color-row">
-          <div class="field">
-            <label>🎨 Primary Color</label>
-            <input type="color" id="primaryColor" value="#1B5E20" oninput="liveUpdate()">
-          </div>
-          <div class="field">
-            <label>✨ Accent Color</label>
-            <input type="color" id="accentColor" value="#43A047" oninput="liveUpdate()">
-          </div>
-        </div>
-
-        <div class="field">
-          <label>📝 Footer Branding</label>
-          <input type="text" value="GoSip ⚡ Powered by Viruzverse" disabled>
-        </div>
-
-        <div class="divider"></div>
-
-        <button class="btn" id="generateBtn" onclick="generateAllQRCodes()">
-          ⚡ Generate All Stickers
-        </button>
-        <div class="status" id="statusMessage">Ready to generate</div>
+  <div class="layout">
+    <div class="panel">
+      <div class="field">
+        <label>🏪 Store / Restaurant Name</label>
+        <input type="text" id="storeName" value="GoSip" maxlength="20" oninput="liveUpdate()" placeholder="Your store name">
       </div>
 
-      <div class="right-col">
-        <div class="preview-label">📱 Live Preview — Click sticker to download</div>
-        <div class="sticker-grid" id="previewGrid"></div>
-        
-        <div class="progress-wrap" id="progressWrapper">
-          <div class="progress-bg">
-            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
-          </div>
-          <div class="progress-text" id="progressText">Preparing...</div>
-        </div>
+      <div class="field">
+        <label>🔗 Shared Menu / Ordering URL</label>
+        <input type="url" id="menuUrl" value="https://gosip.in/menu" placeholder="https://yourstore.com/menu" oninput="debounceGenerate()">
+      </div>
 
-        <div class="dl-buttons">
-          <button class="btn btn-sm" onclick="downloadAllStickers()">
-            ⬇️ Download All (PNG)
-          </button>
-          <button class="btn-outline" onclick="downloadSingleSticker(1)">
-            📋 Sample Table 1
-          </button>
+      <div class="field">
+        <label>🔢 Number of QR Stickers (Same Link)</label>
+        <input type="number" id="stickerCount" value="4" min="1" max="100" oninput="liveUpdate()">
+      </div>
+
+      <div class="color-row">
+        <div class="field">
+          <label>🎨 Primary Color</label>
+          <input type="color" id="primaryColor" value="#1B5E20" oninput="liveUpdate()">
         </div>
-        
-        <div class="print-info">
-          📐 Sticker size: 80mm × 140mm · 300 DPI · 945×1654px
+        <div class="field">
+          <label>✨ Accent Color</label>
+          <input type="color" id="accentColor" value="#43A047" oninput="liveUpdate()">
         </div>
+      </div>
+
+      <div class="field">
+        <label>📝 Footer Branding</label>
+        <input type="text" value="GoSip ⚡ Powered by Viruzverse" disabled>
+      </div>
+      
+      <div class="link-count-note" id="linkCounterNote">
+        📌 All <strong id="countPreview">4</strong> stickers share the SAME menu URL<br>
+        (No table params needed — one link, many prints)
+      </div>
+
+      <div class="divider"></div>
+
+      <button class="btn" id="generateBtn" onclick="generateAllQRCodes()">
+        ⚡ Generate All Stickers
+      </button>
+      <div class="status" id="statusMessage">Ready: same QR for all stickers</div>
+    </div>
+
+    <div class="right-col">
+      <div class="preview-label">📱 Sticker Preview — Click any to download</div>
+      <div class="sticker-grid" id="previewGrid"></div>
+
+      <div class="progress-wrap" id="progressWrapper">
+        <div class="progress-bg">
+          <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+        <div class="progress-text" id="progressText">Preparing...</div>
+      </div>
+
+      <div class="dl-buttons">
+        <button class="btn btn-sm" onclick="downloadAllStickers()">
+          ⬇️ Download All (PNG)
+        </button>
+        <button class="btn-outline" onclick="downloadSingleSticker(1)">
+          📋 Sample First Sticker
+        </button>
+      </div>
+
+      <div class="print-info">
+        📐 Sticker size: 80mm × 140mm · 300 DPI · 945×1654px
       </div>
     </div>
   </div>
+</div>
 
-  <script>
-    // ── Sticker Configuration ──────────────────────────────────────
-    const STICKER_WIDTH = 945;   // 80mm at 300 DPI
-    const STICKER_HEIGHT = 1654; // 140mm at 300 DPI
-    const PREVIEW_SCALE = 0.2;   // Scale for preview display
-    const CORNER_RADIUS = 60;    // Rounded corners radius
+<script>
+  // ── Sticker Configuration ──────────────────────────────────────
+  const STICKER_WIDTH = 945;   // 80mm at 300 DPI
+  const STICKER_HEIGHT = 1654; // 140mm at 300 DPI
+  const PREVIEW_SCALE = 0.2;   // Scale for preview display
+  const CORNER_RADIUS = 60;    // Rounded corners radius
+
+  // DOM Elements
+  const storeNameInp = document.getElementById('storeName');
+  const menuUrlInp = document.getElementById('menuUrl');
+  const stickerCountInp = document.getElementById('stickerCount');
+  const primaryColorInp = document.getElementById('primaryColor');
+  const accentColorInp = document.getElementById('accentColor');
+  const statusMsg = document.getElementById('statusMessage');
+  const previewGrid = document.getElementById('previewGrid');
+  const progressWrapper = document.getElementById('progressWrapper');
+  const progressFill = document.getElementById('progressFill');
+  const progressText = document.getElementById('progressText');
+  const countPreviewSpan = document.getElementById('countPreview');
+
+  // SINGLE QR code cache (because all stickers use same link)
+  let sharedQRImage = null;
+  let debounceTimer = null;
+  let isGenerating = false;
+
+  // Order Instructions (clean steps)
+  const ORDER_INSTRUCTIONS = [
+    "1. Scan QR code with your phone",
+    "2. Browse menu & add items",
+    "3. Tap \"Place Order\"",
+    "4. Confirm and track order",
+    "5. Show order summary at counter",
+    "6. Enjoy your meal & pay"
+  ];
+
+  function getStickerCount() {
+    let count = parseInt(stickerCountInp.value, 10);
+    return isNaN(count) || count < 1 ? 1 : Math.min(count, 100);
+  }
+
+  function updateLinkCounter() {
+    const cnt = getStickerCount();
+    if (countPreviewSpan) countPreviewSpan.innerText = cnt;
+  }
+
+  function setStatus(msg, isError = false) {
+    statusMsg.textContent = msg;
+    statusMsg.style.color = isError ? '#e57373' : '#43A047';
+    if (!isError) setTimeout(() => { if(statusMsg.textContent === msg) statusMsg.style.color = '#43A047'; }, 2000);
+  }
+
+  function debounceGenerate() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => generateAllQRCodes(), 600);
+  }
+
+  // ── QR Generation (Single QR for all stickers, based on raw menu URL) ──
+  async function generateAllQRCodes() {
+    const rawUrl = menuUrlInp.value.trim();
+    if (!rawUrl) {
+      setStatus('⚠️ Please enter a valid menu URL (same for all stickers)', true);
+      return;
+    }
     
-    // DOM Elements
-    const storeNameInp = document.getElementById('storeName');
-    const menuUrlInp = document.getElementById('menuUrl');
-    const tableCountInp = document.getElementById('tableCount');
-    const primaryColorInp = document.getElementById('primaryColor');
-    const accentColorInp = document.getElementById('accentColor');
-    const statusMsg = document.getElementById('statusMessage');
-    const previewGrid = document.getElementById('previewGrid');
-    const progressWrapper = document.getElementById('progressWrapper');
-    const progressFill = document.getElementById('progressFill');
-    const progressText = document.getElementById('progressText');
+    // Validate URL format
+    try {
+      new URL(rawUrl);
+    } catch(e) {
+      setStatus('⚠️ Invalid URL format. Use https://...', true);
+      return;
+    }
     
-    // QR Code cache: tableNum → Image object
-    const qrImageCache = new Map();
-    let debounceTimer = null;
-
-    // ── Order Instructions (Fixed) ────────────────────────────────
-    const ORDER_INSTRUCTIONS = [
-      "1. Scan the QR through ur mobile",
-      "2. Explore and select your food",
-      "3. Click \"Place Order\"",
-      "4. Select Table number",
-      "5. Track Your order",
-      "6. Go and show your bill on your",
-      "    orders page to the counter and pay"
-    ];
-
-    // ── Helper Functions ──────────────────────────────────────────
-    function getTableCount() {
-      let count = parseInt(tableCountInp.value, 10);
-      return isNaN(count) || count < 1 ? 1 : Math.min(count, 100);
+    if (isGenerating) {
+      setStatus('⏳ Already generating...', false);
+      return;
     }
-
-    function setStatus(msg) {
-      statusMsg.textContent = msg;
+    
+    isGenerating = true;
+    setStatus('🔄 Generating shared QR code...');
+    
+    const primaryHex = primaryColorInp.value.replace('#', '');
+    const cleanUrl = rawUrl;  // exactly the same menu link for every sticker (no table param)
+    const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(cleanUrl)}&color=${primaryHex}&bgcolor=FFFFFF&ecc=H&margin=1&t=${Date.now()}`;
+    
+    try {
+      const qrImg = await loadQRImageFromUrl(qrApiUrl);
+      sharedQRImage = qrImg;
+      setStatus(`✅ QR ready: ${getStickerCount()} stickers will use same link`);
+      liveUpdate();       // re-draw preview with fresh QR
+    } catch (err) {
+      console.warn(err);
+      setStatus('❌ QR generation failed. Check network or URL.', true);
+      sharedQRImage = null;
+      liveUpdate();      // show fallback placeholder
+    } finally {
+      isGenerating = false;
     }
+  }
+  
+  function loadQRImageFromUrl(src) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error('QR load failed'));
+      img.src = src;
+    });
+  }
 
-    function debounceGenerate() {
-      clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(() => generateAllQRCodes(), 800);
-    }
-
-    // ── QR Code Generation ────────────────────────────────────────
-    async function generateAllQRCodes() {
-      const url = menuUrlInp.value.trim();
-      if (!url) {
-        setStatus('⚠️ Please enter a menu URL');
-        return;
-      }
-
-      const tableCount = getTableCount();
-      const primaryHex = primaryColorInp.value.replace('#', '');
-      
-      setStatus('🔄 Generating QR codes...');
-      qrImageCache.clear();
-
-      const loadPromises = [];
-      for (let t = 1; t <= tableCount; t++) {
-        const tableUrl = `${url}?table=${t}`;
-        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(tableUrl)}&color=${primaryHex}&bgcolor=FFFFFF&ecc=H&margin=1&t=${Date.now()}`;
-        loadPromises.push(loadQRImage(qrUrl, t));
-      }
-
-      await Promise.all(loadPromises);
-      liveUpdate();
-      setStatus(`✅ ${tableCount} sticker${tableCount > 1 ? 's' : ''} generated successfully!`);
-    }
-
-    function loadQRImage(src, tableNum) {
-      return new Promise((resolve) => {
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.onload = () => {
-          qrImageCache.set(tableNum, img);
-          resolve();
-        };
-        img.onerror = () => {
-          console.warn(`Failed to load QR for table ${tableNum}`);
-          resolve();
-        };
-        img.src = src;
-      });
-    }
-
-    // ── Sticker Drawing Engine ────────────────────────────────────
-    function drawSticker(ctx, width, height, tableNum, scale = 1.0) {
-      const primary = primaryColorInp.value;
-      const accent = accentColorInp.value;
-      const storeName = (storeNameInp.value.trim() || 'GoSip').toUpperCase();
-      const tagline = 'GoSip ⚡ Powered by Viruzverse';
-      const contact = '+91 8300262005  ·  @viruzverse.tech';
-      
-      const s = scale;
-      const corner = CORNER_RADIUS * s;
-      
-      // Responsive layout calculations
-      const headerH = height * 0.14;
-      const footerH = height * 0.12;
-      const qrSize = Math.min(width * 0.56, height * 0.38);
-      const qrX = (width - qrSize) / 2;
-      const qrY = headerH + (height * 0.03);
-      
-      // Badge positioning - clean and modern
-      const badgeGapFromQR = height * 0.025;
-      const badgeY = qrY + qrSize + badgeGapFromQR;
-      const badgeH = Math.max(width * 0.07, 40 * scale);
-      
-      // Instructions positioning with proper gaps
-      const instrGapFromBadge = height * 0.035;
-      const instrStartY = badgeY + badgeH + instrGapFromBadge;
-      const instrEndY = height - footerH - (height * 0.02);
-      
-      // ── Clear and Draw Background ──────────────────────────────
-      ctx.clearRect(0, 0, width, height);
-      
-      // White card background
-      ctx.save();
-      drawRoundedRect(ctx, 0, 0, width, height, corner);
-      ctx.fillStyle = '#FFFFFF';
-      ctx.fill();
-      ctx.restore();
-      
-      // ── Header Section ─────────────────────────────────────────
-      ctx.save();
-      ctx.beginPath();
-      ctx.moveTo(corner, 0);
-      ctx.lineTo(width - corner, 0);
-      ctx.arcTo(width, 0, width, corner, corner);
-      ctx.lineTo(width, headerH);
-      ctx.lineTo(0, headerH);
-      ctx.lineTo(0, corner);
-      ctx.arcTo(0, 0, corner, 0, corner);
-      ctx.closePath();
-      ctx.fillStyle = primary;
-      ctx.fill();
-      
-      // Store name with responsive sizing
-      ctx.fillStyle = '#FFFFFF';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      let fontSize = Math.min(width * 0.085, height * 0.05);
+  // ── Sticker Drawing (No table parameter — just visual table number badge) ──
+  function drawSticker(ctx, width, height, stickerIndex, scale = 1.0) {
+    const primary = primaryColorInp.value;
+    const accent = accentColorInp.value;
+    const storeNameRaw = (storeNameInp.value.trim() || 'GoSip').toUpperCase();
+    const storeName = storeNameRaw.length > 18 ? storeNameRaw.substring(0, 18) : storeNameRaw;
+    const tagline = 'GoSip ⚡ Powered by Viruzverse';
+    const contact = '+91 8300262005  ·  @viruzverse.tech';
+    
+    const s = scale;
+    const corner = CORNER_RADIUS * s;
+    
+    // Layout metrics
+    const headerH = height * 0.14;
+    const footerH = height * 0.12;
+    const qrSize = Math.min(width * 0.56, height * 0.38);
+    const qrX = (width - qrSize) / 2;
+    const qrY = headerH + (height * 0.03);
+    
+    const badgeGapFromQR = height * 0.025;
+    const badgeY = qrY + qrSize + badgeGapFromQR;
+    const badgeH = Math.max(width * 0.07, 40 * scale);
+    
+    const instrGapFromBadge = height * 0.035;
+    const instrStartY = badgeY + badgeH + instrGapFromBadge;
+    const instrEndY = height - footerH - (height * 0.02);
+    
+    // White background with rounded corners
+    ctx.clearRect(0, 0, width, height);
+    ctx.save();
+    drawRoundedRect(ctx, 0, 0, width, height, corner);
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fill();
+    ctx.restore();
+    
+    // ── Header Gradient Section ─────────────────────────────────
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(corner, 0);
+    ctx.lineTo(width - corner, 0);
+    ctx.arcTo(width, 0, width, corner, corner);
+    ctx.lineTo(width, headerH);
+    ctx.lineTo(0, headerH);
+    ctx.lineTo(0, corner);
+    ctx.arcTo(0, 0, corner, 0, corner);
+    ctx.closePath();
+    ctx.fillStyle = primary;
+    ctx.fill();
+    ctx.fillStyle = '#FFFFFF';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    let fontSize = Math.min(width * 0.085, height * 0.05);
+    ctx.font = `900 ${fontSize}px 'Syne', sans-serif`;
+    while (ctx.measureText(storeName).width > width * 0.75 && fontSize > 18) {
+      fontSize -= 2;
       ctx.font = `900 ${fontSize}px 'Syne', sans-serif`;
-      
-      while (ctx.measureText(storeName).width > width * 0.75 && fontSize > 18) {
-        fontSize -= 2;
-        ctx.font = `900 ${fontSize}px 'Syne', sans-serif`;
-      }
-      ctx.fillText(storeName, width / 2, headerH * 0.48);
-      ctx.restore();
-      
-      // ── QR Code Section ────────────────────────────────────────
-      const framePad = Math.max(width * 0.025, 15 * scale);
-      const frameCorner = Math.max(width * 0.035, 20 * scale);
-      
-      // Decorative frame
+    }
+    ctx.fillText(storeName, width / 2, headerH * 0.48);
+    ctx.restore();
+    
+    // ── QR Frame & Image (SAME QR for all stickers) ──────────────
+    const framePad = Math.max(width * 0.025, 15 * scale);
+    const frameCorner = Math.max(width * 0.035, 20 * scale);
+    ctx.save();
+    drawRoundedRect(ctx, qrX - framePad, qrY - framePad, qrSize + framePad * 2, qrSize + framePad * 2, frameCorner);
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fill();
+    ctx.strokeStyle = accent;
+    ctx.lineWidth = Math.max(width * 0.01, 6 * scale);
+    ctx.stroke();
+    ctx.restore();
+    
+    // Draw QR image (same for all stickers) or placeholder
+    if (sharedQRImage) {
       ctx.save();
-      drawRoundedRect(ctx, qrX - framePad, qrY - framePad, 
-                     qrSize + framePad * 2, qrSize + framePad * 2, 
-                     frameCorner);
-      ctx.fillStyle = '#FFFFFF';
-      ctx.fill();
-      ctx.strokeStyle = accent;
-      ctx.lineWidth = Math.max(width * 0.01, 6 * scale);
-      ctx.stroke();
+      drawRoundedRect(ctx, qrX, qrY, qrSize, qrSize, frameCorner * 0.5);
+      ctx.clip();
+      ctx.drawImage(sharedQRImage, qrX, qrY, qrSize, qrSize);
       ctx.restore();
-      
-      // QR Image
-      const qrImg = qrImageCache.get(tableNum);
-      if (qrImg) {
-        ctx.save();
-        drawRoundedRect(ctx, qrX, qrY, qrSize, qrSize, frameCorner * 0.5);
-        ctx.clip();
-        ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize);
-        ctx.restore();
-      } else {
-        ctx.save();
-        drawRoundedRect(ctx, qrX, qrY, qrSize, qrSize, frameCorner * 0.5);
-        ctx.fillStyle = '#F8F8F8';
-        ctx.fill();
-        ctx.fillStyle = '#BDBDBD';
-        ctx.font = `600 ${Math.max(width * 0.038, 20 * scale)}px 'DM Sans', sans-serif`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('Generate QR Code', width / 2, qrY + qrSize / 2);
-        ctx.restore();
-      }
-      
-      // ── Table ID Badge (Modern & Clean Design) ──────────────────
-      const badgeText = `TABLE ${tableNum}`;
+    } else {
       ctx.save();
-      const badgeFontSize = Math.max(width * 0.05, 28 * scale);
-      ctx.font = `700 ${badgeFontSize}px 'Syne', sans-serif`;
-      const badgeTextWidth = ctx.measureText(badgeText).width;
-      const badgePadX = Math.max(width * 0.06, 35 * scale);
-      const badgePadY = Math.max(width * 0.02, 12 * scale);
-      const badgeW = badgeTextWidth + badgePadX * 2;
-      const badgeActualH = badgeFontSize + badgePadY * 2;
-      const badgeX = (width - badgeW) / 2;
-      
-      // Modern pill-shaped badge with gradient
-      const gradient = ctx.createLinearGradient(badgeX, badgeY, badgeX + badgeW, badgeY);
-      gradient.addColorStop(0, primary);
-      gradient.addColorStop(1, accent);
-      
-      // Badge shadow
-      ctx.shadowColor = 'rgba(0,0,0,0.15)';
-      ctx.shadowBlur = 8 * s;
-      ctx.shadowOffsetY = 3 * s;
-      
-      // Draw pill shape
-      drawRoundedRect(ctx, badgeX, badgeY, badgeW, badgeActualH, badgeActualH / 2);
-      ctx.fillStyle = gradient;
+      drawRoundedRect(ctx, qrX, qrY, qrSize, qrSize, frameCorner * 0.5);
+      ctx.fillStyle = '#F8F8F8';
       ctx.fill();
-      ctx.shadowColor = 'transparent';
-      
-      // White border
-      ctx.strokeStyle = '#FFFFFF';
-      ctx.lineWidth = Math.max(width * 0.005, 3 * scale);
-      ctx.stroke();
-      
-      // Badge text
-      ctx.fillStyle = '#FFFFFF';
+      ctx.fillStyle = '#BDBDBD';
+      ctx.font = `600 ${Math.max(width * 0.038, 20 * scale)}px 'DM Sans', sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.font = `700 ${badgeFontSize}px 'Syne', sans-serif`;
-      ctx.fillText(badgeText, width / 2, badgeY + badgeActualH / 2);
+      ctx.fillText('Click Generate', width / 2, qrY + qrSize / 2);
       ctx.restore();
-      
-      // ── Instructions Section (Left Aligned with Proper Padding) ──
-      ctx.save();
-      
-      // Calculate responsive instruction layout
-      const titleFontSize = Math.max(width * 0.042, 24 * scale);
-      const instrFontSize = Math.max(width * 0.033, 18 * scale);
-      const titleLineHeight = titleFontSize * 1.6;
-      const instrLineHeight = instrFontSize * 1.8;
-      const totalInstrHeight = titleLineHeight + (ORDER_INSTRUCTIONS.length * instrLineHeight);
-      
-      let currentY = instrStartY + Math.max(0, (instrEndY - instrStartY - totalInstrHeight) / 2);
-      
-      // Light background for instructions with proper padding
-      const instrBgPad = Math.max(width * 0.04, 25 * scale);
-      const instrBgX = Math.max(width * 0.05, 30 * scale);
-      const instrBgW = width - (instrBgX * 2);
-      const instrBgH = totalInstrHeight + instrBgPad * 2;
-      
-      ctx.fillStyle = 'rgba(248, 248, 248, 0.9)';
-      drawRoundedRect(ctx, instrBgX, currentY - instrBgPad, instrBgW, instrBgH, Math.max(width * 0.025, 15 * scale));
-      ctx.fill();
-      
-      // Title "How to Place Order" in BLACK and BOLD
-      const titleX = instrBgX + Math.max(width * 0.05, 30 * scale);
-      ctx.fillStyle = '#000000';
-      ctx.font = `800 ${titleFontSize}px 'ariel', sans-serif`;
-      ctx.textAlign = 'left';
-      ctx.textBaseline = 'top';
-      ctx.fillText('Instructions', titleX, currentY);
-      
-      // Draw instruction lines with left alignment
-      ctx.fillStyle = '#333333';
-      ctx.textAlign = 'left';
-      ctx.font = `500 ${instrFontSize}px 'DM Sans', sans-serif`;
-      
-      ORDER_INSTRUCTIONS.forEach((line, index) => {
-        const lineY = currentY + titleLineHeight + (index * instrLineHeight);
-        ctx.fillText(line, titleX, lineY);
-      });
-      
-      ctx.restore();
-      
-      // ── Footer Section ─────────────────────────────────────────
-      ctx.save();
-      ctx.beginPath();
-      ctx.moveTo(0, height - footerH);
-      ctx.lineTo(width, height - footerH);
-      ctx.lineTo(width, height - corner);
-      ctx.arcTo(width, height, width - corner, height, corner);
-      ctx.lineTo(corner, height);
-      ctx.arcTo(0, height, 0, height - corner, corner);
-      ctx.lineTo(0, height - footerH);
-      ctx.closePath();
-      ctx.fillStyle = primary;
-      ctx.fill();
-      
-      // Footer text with responsive sizing
-      ctx.fillStyle = '#FFFFFF';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'top';
-      
-      let tagFontSize = Math.max(width * 0.04, 22 * scale);
+    }
+    
+    // ── MODERN BADGE (Table/Sticker number only — visual identity) ──
+    const badgeText = `TABLE ${stickerIndex}`;
+    ctx.save();
+    const badgeFontSize = Math.max(width * 0.045, 26 * scale);
+    ctx.font = `700 ${badgeFontSize}px 'Syne', sans-serif`;
+    const badgeTextWidth = ctx.measureText(badgeText).width;
+    const badgePadX = Math.max(width * 0.06, 35 * scale);
+    const badgePadY = Math.max(width * 0.02, 12 * scale);
+    const badgeW = badgeTextWidth + badgePadX * 2;
+    const badgeActualH = badgeFontSize + badgePadY * 2;
+    const badgeX = (width - badgeW) / 2;
+    
+    const gradient = ctx.createLinearGradient(badgeX, badgeY, badgeX + badgeW, badgeY);
+    gradient.addColorStop(0, primary);
+    gradient.addColorStop(1, accent);
+    ctx.shadowColor = 'rgba(0,0,0,0.15)';
+    ctx.shadowBlur = 8 * s;
+    ctx.shadowOffsetY = 3 * s;
+    drawRoundedRect(ctx, badgeX, badgeY, badgeW, badgeActualH, badgeActualH / 2);
+    ctx.fillStyle = gradient;
+    ctx.fill();
+    ctx.shadowColor = 'transparent';
+    ctx.strokeStyle = '#FFFFFF';
+    ctx.lineWidth = Math.max(width * 0.005, 3 * scale);
+    ctx.stroke();
+    ctx.fillStyle = '#FFFFFF';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = `700 ${badgeFontSize}px 'Syne', sans-serif`;
+    ctx.fillText(badgeText, width / 2, badgeY + badgeActualH / 2);
+    ctx.restore();
+    
+    // ── Instructions (left aligned, clean) ──────────────────────
+    ctx.save();
+    const titleFontSize = Math.max(width * 0.042, 24 * scale);
+    const instrFontSize = Math.max(width * 0.033, 18 * scale);
+    const titleLineHeight = titleFontSize * 1.6;
+    const instrLineHeight = instrFontSize * 1.8;
+    const totalInstrHeight = titleLineHeight + (ORDER_INSTRUCTIONS.length * instrLineHeight);
+    let currentY = instrStartY + Math.max(0, (instrEndY - instrStartY - totalInstrHeight) / 2);
+    
+    const instrBgPad = Math.max(width * 0.04, 25 * scale);
+    const instrBgX = Math.max(width * 0.05, 30 * scale);
+    const instrBgW = width - (instrBgX * 2);
+    const instrBgH = totalInstrHeight + instrBgPad * 2;
+    ctx.fillStyle = 'rgba(248, 248, 248, 0.92)';
+    drawRoundedRect(ctx, instrBgX, currentY - instrBgPad, instrBgW, instrBgH, Math.max(width * 0.025, 15 * scale));
+    ctx.fill();
+    
+    const titleX = instrBgX + Math.max(width * 0.05, 30 * scale);
+    ctx.fillStyle = '#000000';
+    ctx.font = `800 ${titleFontSize}px 'arial', sans-serif`;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillText('HOW TO ORDER', titleX, currentY);
+    
+    ctx.fillStyle = '#222222';
+    ctx.textAlign = 'left';
+    ctx.font = `500 ${instrFontSize}px 'DM Sans', sans-serif`;
+    ORDER_INSTRUCTIONS.forEach((line, idx) => {
+      const lineY = currentY + titleLineHeight + (idx * instrLineHeight);
+      ctx.fillText(line, titleX, lineY);
+    });
+    ctx.restore();
+    
+    // ── Footer ──────────────────────────────────────────────────
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(0, height - footerH);
+    ctx.lineTo(width, height - footerH);
+    ctx.lineTo(width, height - corner);
+    ctx.arcTo(width, height, width - corner, height, corner);
+    ctx.lineTo(corner, height);
+    ctx.arcTo(0, height, 0, height - corner, corner);
+    ctx.lineTo(0, height - footerH);
+    ctx.closePath();
+    ctx.fillStyle = primary;
+    ctx.fill();
+    
+    ctx.fillStyle = '#FFFFFF';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    let tagFontSize = Math.max(width * 0.04, 22 * scale);
+    ctx.font = `700 ${tagFontSize}px 'Syne', sans-serif`;
+    while (ctx.measureText(tagline).width > width * 0.8 && tagFontSize > 12) {
+      tagFontSize -= 1;
       ctx.font = `700 ${tagFontSize}px 'Syne', sans-serif`;
-      while (ctx.measureText(tagline).width > width * 0.8 && tagFontSize > 12) {
-        tagFontSize -= 1;
-        ctx.font = `700 ${tagFontSize}px 'Syne', sans-serif`;
-      }
-      ctx.fillText(tagline, width / 2, height - footerH + footerH * 0.2);
-      
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
-      ctx.font = `400 ${Math.max(width * 0.028, 16 * scale)}px 'DM Sans', sans-serif`;
-      ctx.fillText(contact, width / 2, height - footerH + footerH * 0.5);
-      ctx.restore();
     }
-
-    // ── Drawing Utilities ─────────────────────────────────────────
-    function drawRoundedRect(ctx, x, y, width, height, radius) {
-      ctx.beginPath();
-      ctx.moveTo(x + radius, y);
-      ctx.lineTo(x + width - radius, y);
-      ctx.arcTo(x + width, y, x + width, y + radius, radius);
-      ctx.lineTo(x + width, y + height - radius);
-      ctx.arcTo(x + width, y + height, x + width - radius, y + height, radius);
-      ctx.lineTo(x + radius, y + height);
-      ctx.arcTo(x, y + height, x, y + height - radius, radius);
-      ctx.lineTo(x, y + radius);
-      ctx.arcTo(x, y, x + radius, y, radius);
-      ctx.closePath();
+    ctx.fillText(tagline, width / 2, height - footerH + footerH * 0.2);
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+    ctx.font = `400 ${Math.max(width * 0.028, 16 * scale)}px 'DM Sans', sans-serif`;
+    ctx.fillText(contact, width / 2, height - footerH + footerH * 0.5);
+    ctx.restore();
+  }
+  
+  function drawRoundedRect(ctx, x, y, width, height, radius) {
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.lineTo(x + width - radius, y);
+    ctx.arcTo(x + width, y, x + width, y + radius, radius);
+    ctx.lineTo(x + width, y + height - radius);
+    ctx.arcTo(x + width, y + height, x + width - radius, y + height, radius);
+    ctx.lineTo(x + radius, y + height);
+    ctx.arcTo(x, y + height, x, y + height - radius, radius);
+    ctx.lineTo(x, y + radius);
+    ctx.arcTo(x, y, x + radius, y, radius);
+    ctx.closePath();
+  }
+  
+  // ── Preview & live update (all stickers same QR, different badge) ──
+  function createPreviewCanvas(stickerId) {
+    const previewW = Math.floor(STICKER_WIDTH * PREVIEW_SCALE);
+    const previewH = Math.floor(STICKER_HEIGHT * PREVIEW_SCALE);
+    
+    const canvas = document.createElement('canvas');
+    canvas.width = previewW;
+    canvas.height = previewH;
+    canvas.style.cursor = 'pointer';
+    canvas.title = `Sticker #${stickerId} · same menu link — Click to download`;
+    canvas.onclick = () => downloadSingleSticker(stickerId);
+    
+    const ctx = canvas.getContext('2d');
+    drawSticker(ctx, previewW, previewH, stickerId, PREVIEW_SCALE);
+    
+    const wrapper = document.createElement('div');
+    wrapper.className = 'sticker-wrapper';
+    const shadowDiv = document.createElement('div');
+    shadowDiv.className = 'sticker-shadow';
+    shadowDiv.appendChild(canvas);
+    const badge = document.createElement('div');
+    badge.className = 'table-badge';
+    badge.textContent = `Table ${stickerId}`;
+    wrapper.appendChild(shadowDiv);
+    wrapper.appendChild(badge);
+    return wrapper;
+  }
+  
+  function liveUpdate() {
+    const count = getStickerCount();
+    updateLinkCounter();
+    previewGrid.innerHTML = '';
+    if (!sharedQRImage && menuUrlInp.value.trim() !== "") {
+      // Show placeholder but we keep layout responsive
     }
-
-    // ── Preview Management ────────────────────────────────────────
-    function createPreviewCanvas(tableNum) {
-      const previewW = Math.floor(STICKER_WIDTH * PREVIEW_SCALE);
-      const previewH = Math.floor(STICKER_HEIGHT * PREVIEW_SCALE);
-      
-      const canvas = document.createElement('canvas');
-      canvas.width = previewW;
-      canvas.height = previewH;
-      canvas.style.cursor = 'pointer';
-      canvas.title = `Table ${tableNum} - Click to download`;
-      canvas.onclick = () => downloadSingleSticker(tableNum);
-      
-      const ctx = canvas.getContext('2d');
-      drawSticker(ctx, previewW, previewH, tableNum, PREVIEW_SCALE);
-      
-      // Create wrapper
-      const wrapper = document.createElement('div');
-      wrapper.className = 'sticker-wrapper';
-      
-      const shadowDiv = document.createElement('div');
-      shadowDiv.className = 'sticker-shadow';
-      shadowDiv.appendChild(canvas);
-      
-      const badge = document.createElement('div');
-      badge.className = 'table-badge';
-      badge.textContent = `Table ${tableNum}`;
-      
-      wrapper.appendChild(shadowDiv);
-      wrapper.appendChild(badge);
-      
-      return wrapper;
+    for (let i = 1; i <= count; i++) {
+      previewGrid.appendChild(createPreviewCanvas(i));
     }
-
-    function liveUpdate() {
-      const count = getTableCount();
-      previewGrid.innerHTML = '';
-      
-      for (let t = 1; t <= count; t++) {
-        previewGrid.appendChild(createPreviewCanvas(t));
-      }
+  }
+  
+  // ── HighRes Export (shared QR reused) ─────────────────────────
+  function renderHighResSticker(stickerNum) {
+    const canvas = document.createElement('canvas');
+    canvas.width = STICKER_WIDTH;
+    canvas.height = STICKER_HEIGHT;
+    const ctx = canvas.getContext('2d');
+    drawSticker(ctx, STICKER_WIDTH, STICKER_HEIGHT, stickerNum, 1.0);
+    return canvas;
+  }
+  
+  function downloadSingleSticker(stickerNum) {
+    const storeNameVal = storeNameInp.value.trim() || 'Store';
+    if (!sharedQRImage && menuUrlInp.value.trim()) {
+      setStatus('⚠️ Generate QR first (click Generate All)', true);
+      return;
     }
-
-    // ── Download Functions ────────────────────────────────────────
-    function renderHighResSticker(tableNum) {
-      const canvas = document.createElement('canvas');
-      canvas.width = STICKER_WIDTH;
-      canvas.height = STICKER_HEIGHT;
-      
-      const ctx = canvas.getContext('2d');
-      drawSticker(ctx, STICKER_WIDTH, STICKER_HEIGHT, tableNum, 1.0);
-      
-      return canvas;
+    if (!sharedQRImage) {
+      setStatus('❗ Please click "Generate All Stickers" first', true);
+      return;
     }
-
-    function downloadSingleSticker(tableNum) {
-      const storeName = storeNameInp.value.trim() || 'Store';
-      setStatus(`📥 Downloading Table ${tableNum}...`);
-      
-      const canvas = renderHighResSticker(tableNum);
+    setStatus(`📥 Downloading sticker #${stickerNum}...`);
+    const canvas = renderHighResSticker(stickerNum);
+    const link = document.createElement('a');
+    link.download = `${storeNameVal}-Table-${stickerNum}-QR.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    setStatus(`✅ Sticker #${stickerNum} saved!`);
+  }
+  
+  async function downloadAllStickers() {
+    const count = getStickerCount();
+    const storeNameVal = storeNameInp.value.trim() || 'Store';
+    
+    if (!sharedQRImage && menuUrlInp.value.trim()) {
+      setStatus('⚠️ Generate QR stickers first', true);
+      return;
+    }
+    if (!sharedQRImage) {
+      setStatus('❗ Please generate QR codes before bulk download', true);
+      return;
+    }
+    
+    progressWrapper.style.display = 'flex';
+    for (let i = 1; i <= count; i++) {
+      progressText.textContent = `Exporting sticker ${i} of ${count}...`;
+      progressFill.style.width = `${((i - 1) / count) * 100}%`;
+      const canvas = renderHighResSticker(i);
       const link = document.createElement('a');
-      link.download = `${storeName}-Table-${tableNum}-QR-Sticker.png`;
-      link.href = canvas.toDataURL('image/png', 1.0);
+      link.download = `${storeNameVal}-Sticker-${i}-QR.png`;
+      link.href = canvas.toDataURL('image/png');
       link.click();
-      
-      setStatus(`✅ Table ${tableNum} sticker downloaded!`);
+      await new Promise(r => setTimeout(r, 180));
+      progressFill.style.width = `${(i / count) * 100}%`;
     }
-
-    async function downloadAllStickers() {
-      const count = getTableCount();
-      const storeName = storeNameInp.value.trim() || 'Store';
-      
-      progressWrapper.style.display = 'flex';
-      
-      for (let t = 1; t <= count; t++) {
-        progressText.textContent = `Exporting Table ${t} of ${count}...`;
-        progressFill.style.width = `${((t - 1) / count) * 100}%`;
-        
-        const canvas = renderHighResSticker(t);
-        const link = document.createElement('a');
-        link.download = `${storeName}-Table-${t}-QR-Sticker.png`;
-        link.href = canvas.toDataURL('image/png', 1.0);
-        link.click();
-        
-        await new Promise(resolve => setTimeout(resolve, 200));
-        progressFill.style.width = `${(t / count) * 100}%`;
-      }
-      
-      progressText.textContent = `✅ All ${count} stickers downloaded!`;
-      setStatus(`✅ ${count} stickers saved successfully!`);
-      
-      setTimeout(() => {
-        progressWrapper.style.display = 'none';
-      }, 2500);
+    progressText.textContent = `✅ ${count} stickers downloaded! (same menu link)`;
+    setStatus(`✅ ${count} stickers saved. Same QR across all.`);
+    setTimeout(() => { progressWrapper.style.display = 'none'; }, 2200);
+  }
+  
+  // ── Initialize & Auto first generation ─────────────────────────
+  window.addEventListener('load', () => {
+    updateLinkCounter();
+    if (menuUrlInp.value.trim()) {
+      setTimeout(() => generateAllQRCodes(), 300);
+    } else {
+      liveUpdate(); // show placeholders
     }
-
-    // ── Event Listeners ──────────────────────────────────────────
-    window.addEventListener('load', () => {
-      liveUpdate();
-      if (menuUrlInp.value.trim()) {
-        setTimeout(() => generateAllQRCodes(), 500);
-      }
-    });
-
-    // Handle window resize
-    window.addEventListener('resize', () => {
-      liveUpdate();
-    });
-
-    // Expose functions globally
-    window.liveUpdate = liveUpdate;
-    window.debounceGenerate = debounceGenerate;
-    window.generateAllQRCodes = generateAllQRCodes;
-    window.downloadAllStickers = downloadAllStickers;
-    window.downloadSingleSticker = downloadSingleSticker;
-  </script>
+  });
+  
+  window.addEventListener('resize', () => liveUpdate());
+  window.liveUpdate = liveUpdate;
+  window.debounceGenerate = debounceGenerate;
+  window.generateAllQRCodes = generateAllQRCodes;
+  window.downloadAllStickers = downloadAllStickers;
+  window.downloadSingleSticker = downloadSingleSticker;
+</script>
 </body>
 </html>
