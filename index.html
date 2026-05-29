@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Print-Ready QR Sticker · Viruzverse</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0a0f0a;
+      font-family: 'DM Sans', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem;
+      min-height: 100vh;
+      color: #E8F0E9;
+    }
+
+    .container {
+      max-width: 1300px;
+      width: 100%;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .badge {
+      background: rgba(67, 160, 71, 0.15);
+      border: 1px solid rgba(67, 160, 71, 0.3);
+      border-radius: 50px;
+      padding: 0.4rem 1.2rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #43A047;
+      display: inline-block;
+      margin-bottom: 0.8rem;
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 900;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      color: #ffffff;
+      line-height: 1.1;
+      letter-spacing: -1px;
+    }
+
+    h1 span {
+      color: #43A047;
+    }
+
+    .subhead {
+      color: #7A9B7C;
+      margin-top: 0.4rem;
+      font-size: 0.9rem;
+      font-weight: 400;
+    }
+
+    .layout {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    /* Control Panel */
+    .panel {
+      background: #111811;
+      border: 1.5px solid #243025;
+      border-radius: 20px;
+      padding: 1.5rem;
+      width: 100%;
+      max-width: 350px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+      flex-shrink: 0;
+      position: sticky;
+      top: 1rem;
+    }
+
+    .field {
+      margin-bottom: 0.9rem;
+    }
+
+    label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #7A9B7C;
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+
+    input[type="text"],
+    input[type="url"],
+    input[type="number"] {
+      width: 100%;
+      padding: 0.7rem 0.8rem;
+      background: #1a221a;
+      border: 1.5px solid #2A3A2B;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      color: #E8F0E9;
+      outline: none;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.2s;
+    }
+
+    input:focus {
+      border-color: #43A047;
+      box-shadow: 0 0 0 3px rgba(67, 160, 71, 0.1);
+    }
+
+    .color-row {
+      display: flex;
+      gap: 0.7rem;
+    }
+
+    .color-row .field {
+      flex: 1;
+    }
+
+    input[type="color"] {
+      width: 100%;
+      height: 40px;
+      border-radius: 10px;
+      border: 1.5px solid #2A3A2B;
+      background: #1a221a;
+      cursor: pointer;
+      padding: 3px;
+    }
+
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #2A3A2B, transparent);
+      margin: 1rem 0;
+    }
+
+    .btn {
+      background: #43A047;
+      color: #ffffff;
+      border: none;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 0.85rem;
+      padding: 0.8rem 1.2rem;
+      width: 100%;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .btn:hover {
+      background: #388E3C;
+      transform: translateY(-1px);
+      box-shadow: 0 10px 25px rgba(67, 160, 71, 0.3);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .status {
+      font-size: 0.75rem;
+      margin-top: 0.6rem;
+      color: #43A047;
+      font-weight: 600;
+      text-align: center;
+      min-height: 1rem;
+    }
+
+    .right-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .preview-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #7A9B7C;
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    .sticker-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1rem;
+      width: 100%;
+      justify-items: center;
+    }
+
+    .sticker-wrapper {
+      position: relative;
+      transition: transform 0.2s ease;
+      width: 100%;
+      max-width: 220px;
+    }
+
+    .sticker-wrapper:hover {
+      transform: translateY(-4px);
+    }
+
+    .sticker-shadow {
+      border-radius: 14px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      transition: box-shadow 0.2s ease;
+      width: 100%;
+    }
+
+    canvas {
+      display: block;
+      border-radius: 14px;
+      cursor: pointer;
+      background: #ffffff;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 945 / 1654;
+    }
+
+    .table-badge {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 2;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .sticker-wrapper:hover .table-badge {
+      opacity: 1;
+    }
+
+    .progress-wrap {
+      display: none;
+      width: 100%;
+      max-width: 280px;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .progress-bg {
+      height: 4px;
+      background: #1a221a;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #2A3A2B;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #43A047, #66BB6A);
+      width: 0%;
+      border-radius: 8px;
+      transition: width 0.3s ease;
+    }
+
+    .progress-text {
+      font-size: 0.7rem;
+      color: #7A9B7C;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .dl-buttons {
+      display: flex;
+      gap: 0.7rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn-sm {
+      padding: 0.7rem 1.2rem;
+      font-size: 0.8rem;
+      width: auto;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid #43A047;
+      color: #43A047;
+      padding: 0.7rem 1.2rem;
+      border-radius: 12px;
+      font-weight: 700;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-outline:hover {
+      background: #43A047;
+      color: #ffffff;
+      box-shadow: 0 8px 20px rgba(67, 160, 71, 0.3);
+    }
+
+    .print-info {
+      text-align: center;
+      color: #7A9B7C;
+      font-size: 0.65rem;
+      font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 0.8rem;
+      }
+
+      .layout {
+        gap: 1rem;
+      }
+
+      .panel {
+        max-width: 100%;
+        padding: 1.2rem;
+        position: static;
+      }
+
+      h1 {
+        font-size: 1.6rem;
+      }
+
+      .sticker-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 0.8rem;
+      }
+
+      .sticker-wrapper {
+        max-width: 180px;
+      }
+
+      .btn-outline {
+        padding: 0.6rem 1rem;
+        font-size: 0.75rem;
+      }
+
+      .dl-buttons {
+        gap: 0.5rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .sticker-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.6rem;
+      }
+
+      .sticker-wrapper {
+        max-width: 100%;
+      }
+
+      .btn-sm {
+        padding: 0.65rem 0.8rem;
+        font-size: 0.75rem;
+      }
+
+      .btn-outline {
+        padding: 0.55rem 0.8rem;
+        font-size: 0.7rem;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      
+      .panel, .dl-buttons, .preview-label, .progress-wrap, header, .print-info, .table-badge {
+        display: none;
+      }
+      
+      .sticker-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0;
+      }
+      
+      canvas {
+        box-shadow: none;
+        border-radius: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge">⚡ Viruzverse Solutions</div>
+      <h1>QR Sticker <span>Generator</span></h1>
+      <div class="subhead">Print-ready · 300 DPI · Paytm/PhonePe style</div>
+    </header>
+
+    <div class="layout">
+      <div class="panel">
+        <div class="field">
+          <label>🏪 Store / Restaurant Name</label>
+          <input type="text" id="storeName" value="GoSip" maxlength="20" oninput="liveUpdate()" placeholder="Your store name">
+        </div>
+
+        <div class="field">
+          <label>🔗 Menu / Ordering URL</label>
+          <input type="url" id="menuUrl" value="https://gosip.in/menu" placeholder="https://yourstore.com/menu" oninput="debounceGenerate()">
+        </div>
+
+        <div class="field">
+          <label>🔢 Number of Tables (Stickers)</label>
+          <input type="number" id="tableCount" value="4" min="1" max="100" oninput="liveUpdate()">
+        </div>
+
+        <div class="color-row">
+          <div class="field">
+            <label>🎨 Primary Color</label>
+            <input type="color" id="primaryColor" value="#1B5E20" oninput="liveUpdate()">
+          </div>
+          <div class="field">
+            <label>✨ Accent Color</label>
+            <input type="color" id="accentColor" value="#43A047" oninput="liveUpdate()">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>📝 Footer Branding</label>
+          <input type="text" value="GoSip ⚡ Powered by Viruzverse" disabled>
+        </div>
+
+        <div class="divider"></div>
+
+        <button class="btn" id="generateBtn" onclick="generateAllQRCodes()">
+          ⚡ Generate All Stickers
+        </button>
+        <div class="status" id="statusMessage">Ready to generate</div>
+      </div>
+
+      <div class="right-col">
+        <div class="preview-label">📱 Live Preview — Click sticker to download</div>
+        <div class="sticker-grid" id="previewGrid"></div>
+        
+        <div class="progress-wrap" id="progressWrapper">
+          <div class="progress-bg">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+          </div>
+          <div class="progress-text" id="progressText">Preparing...</div>
+        </div>
+
+        <div class="dl-buttons">
+          <button class="btn btn-sm" onclick="downloadAllStickers()">
+            ⬇️ Download All (PNG)
+          </button>
+          <button class="btn-outline" onclick="downloadSingleSticker(1)">
+            📋 Sample Table 1
+          </button>
+        </div>
+        
+        <div class="print-info">
+          📐 Sticker size: 80mm × 140mm · 300 DPI · 945×1654px
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── Sticker Configuration ──────────────────────────────────────
+    const STICKER_WIDTH = 945;   // 80mm at 300 DPI
+    const STICKER_HEIGHT = 1654; // 140mm at 300 DPI
+    const PREVIEW_SCALE = 0.2;   // Scale for preview display
+    const CORNER_RADIUS = 60;    // Rounded corners radius
+    
+    // DOM Elements
+    const storeNameInp = document.getElementById('storeName');
+    const menuUrlInp = document.getElementById('menuUrl');
+    const tableCountInp = document.getElementById('tableCount');
+    const primaryColorInp = document.getElementById('primaryColor');
+    const accentColorInp = document.getElementById('accentColor');
+    const statusMsg = document.getElementById('statusMessage');
+    const previewGrid = document.getElementById('previewGrid');
+    const progressWrapper = document.getElementById('progressWrapper');
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+    
+    // QR Code cache: tableNum → Image object
+    const qrImageCache = new Map();
+    let debounceTimer = null;
+
+    // ── Order Instructions (Fixed) ────────────────────────────────
+    const ORDER_INSTRUCTIONS = [
+      "1. Scan the QR through ur mobile",
+      "2. Explore and select your food",
+      "3. Click \"Place Order\"",
+      "4. Select Table number",
+      "5. Track Your order",
+      "6. Go and show your bill on your",
+      "    orders page to the counter and pay"
+    ];
+
+    // ── Helper Functions ──────────────────────────────────────────
+    function getTableCount() {
+      let count = parseInt(tableCountInp.value, 10);
+      return isNaN(count) || count < 1 ? 1 : Math.min(count, 100);
+    }
+
+    function setStatus(msg) {
+      statusMsg.textContent = msg;
+    }
+
+    function debounceGenerate() {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => generateAllQRCodes(), 800);
+    }
+
+    // ── QR Code Generation ────────────────────────────────────────
+    async function generateAllQRCodes() {
+      const url = menuUrlInp.value.trim();
+      if (!url) {
+        setStatus('⚠️ Please enter a menu URL');
+        return;
+      }
+
+      const tableCount = getTableCount();
+      const primaryHex = primaryColorInp.value.replace('#', '');
+      
+      setStatus('🔄 Generating QR codes...');
+      qrImageCache.clear();
+
+      const loadPromises = [];
+      for (let t = 1; t <= tableCount; t++) {
+        const tableUrl = `${url}?table=${t}`;
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(tableUrl)}&color=${primaryHex}&bgcolor=FFFFFF&ecc=H&margin=1&t=${Date.now()}`;
+        loadPromises.push(loadQRImage(qrUrl, t));
+      }
+
+      await Promise.all(loadPromises);
+      liveUpdate();
+      setStatus(`✅ ${tableCount} sticker${tableCount > 1 ? 's' : ''} generated successfully!`);
+    }
+
+    function loadQRImage(src, tableNum) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          qrImageCache.set(tableNum, img);
+          resolve();
+        };
+        img.onerror = () => {
+          console.warn(`Failed to load QR for table ${tableNum}`);
+          resolve();
+        };
+        img.src = src;
+      });
+    }
+
+    // ── Sticker Drawing Engine ────────────────────────────────────
+    function drawSticker(ctx, width, height, tableNum, scale = 1.0) {
+      const primary = primaryColorInp.value;
+      const accent = accentColorInp.value;
+      const storeName = (storeNameInp.value.trim() || 'GoSip').toUpperCase();
+      const tagline = 'GoSip ⚡ Powered by Viruzverse';
+      const contact = '+91 8300262005  ·  @viruzverse.tech';
+      
+      const s = scale;
+      const corner = CORNER_RADIUS * s;
+      
+      // Responsive layout calculations
+      const headerH = height * 0.14;
+      const footerH = height * 0.12;
+      const qrSize = Math.min(width * 0.56, height * 0.38);
+      const qrX = (width - qrSize) / 2;
+      const qrY = headerH + (height * 0.03);
+      
+      // Badge positioning - clean and modern
+      const badgeGapFromQR = height * 0.025;
+      const badgeY = qrY + qrSize + badgeGapFromQR;
+      const badgeH = Math.max(width * 0.07, 40 * scale);
+      
+      // Instructions positioning with proper gaps
+      const instrGapFromBadge = height * 0.035;
+      const instrStartY = badgeY + badgeH + instrGapFromBadge;
+      const instrEndY = height - footerH - (height * 0.02);
+      
+      // ── Clear and Draw Background ──────────────────────────────
+      ctx.clearRect(0, 0, width, height);
+      
+      // White card background
+      ctx.save();
+      drawRoundedRect(ctx, 0, 0, width, height, corner);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fill();
+      ctx.restore();
+      
+      // ── Header Section ─────────────────────────────────────────
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(corner, 0);
+      ctx.lineTo(width - corner, 0);
+      ctx.arcTo(width, 0, width, corner, corner);
+      ctx.lineTo(width, headerH);
+      ctx.lineTo(0, headerH);
+      ctx.lineTo(0, corner);
+      ctx.arcTo(0, 0, corner, 0, corner);
+      ctx.closePath();
+      ctx.fillStyle = primary;
+      ctx.fill();
+      
+      // Store name with responsive sizing
+      ctx.fillStyle = '#FFFFFF';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      let fontSize = Math.min(width * 0.085, height * 0.05);
+      ctx.font = `900 ${fontSize}px 'Syne', sans-serif`;
+      
+      while (ctx.measureText(storeName).width > width * 0.75 && fontSize > 18) {
+        fontSize -= 2;
+        ctx.font = `900 ${fontSize}px 'Syne', sans-serif`;
+      }
+      ctx.fillText(storeName, width / 2, headerH * 0.48);
+      ctx.restore();
+      
+      // ── QR Code Section ────────────────────────────────────────
+      const framePad = Math.max(width * 0.025, 15 * scale);
+      const frameCorner = Math.max(width * 0.035, 20 * scale);
+      
+      // Decorative frame
+      ctx.save();
+      drawRoundedRect(ctx, qrX - framePad, qrY - framePad, 
+                     qrSize + framePad * 2, qrSize + framePad * 2, 
+                     frameCorner);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fill();
+      ctx.strokeStyle = accent;
+      ctx.lineWidth = Math.max(width * 0.01, 6 * scale);
+      ctx.stroke();
+      ctx.restore();
+      
+      // QR Image
+      const qrImg = qrImageCache.get(tableNum);
+      if (qrImg) {
+        ctx.save();
+        drawRoundedRect(ctx, qrX, qrY, qrSize, qrSize, frameCorner * 0.5);
+        ctx.clip();
+        ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize);
+        ctx.restore();
+      } else {
+        ctx.save();
+        drawRoundedRect(ctx, qrX, qrY, qrSize, qrSize, frameCorner * 0.5);
+        ctx.fillStyle = '#F8F8F8';
+        ctx.fill();
+        ctx.fillStyle = '#BDBDBD';
+        ctx.font = `600 ${Math.max(width * 0.038, 20 * scale)}px 'DM Sans', sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('Generate QR Code', width / 2, qrY + qrSize / 2);
+        ctx.restore();
+      }
+      
+      // ── Table ID Badge (Modern & Clean Design) ──────────────────
+      const badgeText = `TABLE ${tableNum}`;
+      ctx.save();
+      const badgeFontSize = Math.max(width * 0.05, 28 * scale);
+      ctx.font = `700 ${badgeFontSize}px 'Syne', sans-serif`;
+      const badgeTextWidth = ctx.measureText(badgeText).width;
+      const badgePadX = Math.max(width * 0.06, 35 * scale);
+      const badgePadY = Math.max(width * 0.02, 12 * scale);
+      const badgeW = badgeTextWidth + badgePadX * 2;
+      const badgeActualH = badgeFontSize + badgePadY * 2;
+      const badgeX = (width - badgeW) / 2;
+      
+      // Modern pill-shaped badge with gradient
+      const gradient = ctx.createLinearGradient(badgeX, badgeY, badgeX + badgeW, badgeY);
+      gradient.addColorStop(0, primary);
+      gradient.addColorStop(1, accent);
+      
+      // Badge shadow
+      ctx.shadowColor = 'rgba(0,0,0,0.15)';
+      ctx.shadowBlur = 8 * s;
+      ctx.shadowOffsetY = 3 * s;
+      
+      // Draw pill shape
+      drawRoundedRect(ctx, badgeX, badgeY, badgeW, badgeActualH, badgeActualH / 2);
+      ctx.fillStyle = gradient;
+      ctx.fill();
+      ctx.shadowColor = 'transparent';
+      
+      // White border
+      ctx.strokeStyle = '#FFFFFF';
+      ctx.lineWidth = Math.max(width * 0.005, 3 * scale);
+      ctx.stroke();
+      
+      // Badge text
+      ctx.fillStyle = '#FFFFFF';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.font = `700 ${badgeFontSize}px 'Syne', sans-serif`;
+      ctx.fillText(badgeText, width / 2, badgeY + badgeActualH / 2);
+      ctx.restore();
+      
+      // ── Instructions Section (Left Aligned with Proper Padding) ──
+      ctx.save();
+      
+      // Calculate responsive instruction layout
+      const titleFontSize = Math.max(width * 0.042, 24 * scale);
+      const instrFontSize = Math.max(width * 0.033, 18 * scale);
+      const titleLineHeight = titleFontSize * 1.6;
+      const instrLineHeight = instrFontSize * 1.8;
+      const totalInstrHeight = titleLineHeight + (ORDER_INSTRUCTIONS.length * instrLineHeight);
+      
+      let currentY = instrStartY + Math.max(0, (instrEndY - instrStartY - totalInstrHeight) / 2);
+      
+      // Light background for instructions with proper padding
+      const instrBgPad = Math.max(width * 0.04, 25 * scale);
+      const instrBgX = Math.max(width * 0.05, 30 * scale);
+      const instrBgW = width - (instrBgX * 2);
+      const instrBgH = totalInstrHeight + instrBgPad * 2;
+      
+      ctx.fillStyle = 'rgba(248, 248, 248, 0.9)';
+      drawRoundedRect(ctx, instrBgX, currentY - instrBgPad, instrBgW, instrBgH, Math.max(width * 0.025, 15 * scale));
+      ctx.fill();
+      
+      // Title "How to Place Order" in BLACK and BOLD
+      const titleX = instrBgX + Math.max(width * 0.05, 30 * scale);
+      ctx.fillStyle = '#000000';
+      ctx.font = `800 ${titleFontSize}px 'ariel', sans-serif`;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      ctx.fillText('Instructions', titleX, currentY);
+      
+      // Draw instruction lines with left alignment
+      ctx.fillStyle = '#333333';
+      ctx.textAlign = 'left';
+      ctx.font = `500 ${instrFontSize}px 'DM Sans', sans-serif`;
+      
+      ORDER_INSTRUCTIONS.forEach((line, index) => {
+        const lineY = currentY + titleLineHeight + (index * instrLineHeight);
+        ctx.fillText(line, titleX, lineY);
+      });
+      
+      ctx.restore();
+      
+      // ── Footer Section ─────────────────────────────────────────
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(0, height - footerH);
+      ctx.lineTo(width, height - footerH);
+      ctx.lineTo(width, height - corner);
+      ctx.arcTo(width, height, width - corner, height, corner);
+      ctx.lineTo(corner, height);
+      ctx.arcTo(0, height, 0, height - corner, corner);
+      ctx.lineTo(0, height - footerH);
+      ctx.closePath();
+      ctx.fillStyle = primary;
+      ctx.fill();
+      
+      // Footer text with responsive sizing
+      ctx.fillStyle = '#FFFFFF';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      
+      let tagFontSize = Math.max(width * 0.04, 22 * scale);
+      ctx.font = `700 ${tagFontSize}px 'Syne', sans-serif`;
+      while (ctx.measureText(tagline).width > width * 0.8 && tagFontSize > 12) {
+        tagFontSize -= 1;
+        ctx.font = `700 ${tagFontSize}px 'Syne', sans-serif`;
+      }
+      ctx.fillText(tagline, width / 2, height - footerH + footerH * 0.2);
+      
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+      ctx.font = `400 ${Math.max(width * 0.028, 16 * scale)}px 'DM Sans', sans-serif`;
+      ctx.fillText(contact, width / 2, height - footerH + footerH * 0.5);
+      ctx.restore();
+    }
+
+    // ── Drawing Utilities ─────────────────────────────────────────
+    function drawRoundedRect(ctx, x, y, width, height, radius) {
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + width - radius, y);
+      ctx.arcTo(x + width, y, x + width, y + radius, radius);
+      ctx.lineTo(x + width, y + height - radius);
+      ctx.arcTo(x + width, y + height, x + width - radius, y + height, radius);
+      ctx.lineTo(x + radius, y + height);
+      ctx.arcTo(x, y + height, x, y + height - radius, radius);
+      ctx.lineTo(x, y + radius);
+      ctx.arcTo(x, y, x + radius, y, radius);
+      ctx.closePath();
+    }
+
+    // ── Preview Management ────────────────────────────────────────
+    function createPreviewCanvas(tableNum) {
+      const previewW = Math.floor(STICKER_WIDTH * PREVIEW_SCALE);
+      const previewH = Math.floor(STICKER_HEIGHT * PREVIEW_SCALE);
+      
+      const canvas = document.createElement('canvas');
+      canvas.width = previewW;
+      canvas.height = previewH;
+      canvas.style.cursor = 'pointer';
+      canvas.title = `Table ${tableNum} - Click to download`;
+      canvas.onclick = () => downloadSingleSticker(tableNum);
+      
+      const ctx = canvas.getContext('2d');
+      drawSticker(ctx, previewW, previewH, tableNum, PREVIEW_SCALE);
+      
+      // Create wrapper
+      const wrapper = document.createElement('div');
+      wrapper.className = 'sticker-wrapper';
+      
+      const shadowDiv = document.createElement('div');
+      shadowDiv.className = 'sticker-shadow';
+      shadowDiv.appendChild(canvas);
+      
+      const badge = document.createElement('div');
+      badge.className = 'table-badge';
+      badge.textContent = `Table ${tableNum}`;
+      
+      wrapper.appendChild(shadowDiv);
+      wrapper.appendChild(badge);
+      
+      return wrapper;
+    }
+
+    function liveUpdate() {
+      const count = getTableCount();
+      previewGrid.innerHTML = '';
+      
+      for (let t = 1; t <= count; t++) {
+        previewGrid.appendChild(createPreviewCanvas(t));
+      }
+    }
+
+    // ── Download Functions ────────────────────────────────────────
+    function renderHighResSticker(tableNum) {
+      const canvas = document.createElement('canvas');
+      canvas.width = STICKER_WIDTH;
+      canvas.height = STICKER_HEIGHT;
+      
+      const ctx = canvas.getContext('2d');
+      drawSticker(ctx, STICKER_WIDTH, STICKER_HEIGHT, tableNum, 1.0);
+      
+      return canvas;
+    }
+
+    function downloadSingleSticker(tableNum) {
+      const storeName = storeNameInp.value.trim() || 'Store';
+      setStatus(`📥 Downloading Table ${tableNum}...`);
+      
+      const canvas = renderHighResSticker(tableNum);
+      const link = document.createElement('a');
+      link.download = `${storeName}-Table-${tableNum}-QR-Sticker.png`;
+      link.href = canvas.toDataURL('image/png', 1.0);
+      link.click();
+      
+      setStatus(`✅ Table ${tableNum} sticker downloaded!`);
+    }
+
+    async function downloadAllStickers() {
+      const count = getTableCount();
+      const storeName = storeNameInp.value.trim() || 'Store';
+      
+      progressWrapper.style.display = 'flex';
+      
+      for (let t = 1; t <= count; t++) {
+        progressText.textContent = `Exporting Table ${t} of ${count}...`;
+        progressFill.style.width = `${((t - 1) / count) * 100}%`;
+        
+        const canvas = renderHighResSticker(t);
+        const link = document.createElement('a');
+        link.download = `${storeName}-Table-${t}-QR-Sticker.png`;
+        link.href = canvas.toDataURL('image/png', 1.0);
+        link.click();
+        
+        await new Promise(resolve => setTimeout(resolve, 200));
+        progressFill.style.width = `${(t / count) * 100}%`;
+      }
+      
+      progressText.textContent = `✅ All ${count} stickers downloaded!`;
+      setStatus(`✅ ${count} stickers saved successfully!`);
+      
+      setTimeout(() => {
+        progressWrapper.style.display = 'none';
+      }, 2500);
+    }
+
+    // ── Event Listeners ──────────────────────────────────────────
+    window.addEventListener('load', () => {
+      liveUpdate();
+      if (menuUrlInp.value.trim()) {
+        setTimeout(() => generateAllQRCodes(), 500);
+      }
+    });
+
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      liveUpdate();
+    });
+
+    // Expose functions globally
+    window.liveUpdate = liveUpdate;
+    window.debounceGenerate = debounceGenerate;
+    window.generateAllQRCodes = generateAllQRCodes;
+    window.downloadAllStickers = downloadAllStickers;
+    window.downloadSingleSticker = downloadSingleSticker;
+  </script>
+</body>
+</html>
